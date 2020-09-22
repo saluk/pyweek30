@@ -1,0 +1,1 @@
+briefcase update android && briefcase build android && briefcase run android -d 465632594c423098
