@@ -155,7 +155,7 @@ class LocationScreen(MessageScreen):
             members = list(self.state.get_assigned_cast(
                 location=self.location, action=action
             ))
-            label = action
+            label = action.capitalize()
             if members:
                 nl, nlp = self.state.name_list(members)
                 label += "({0})".format(nl)

@@ -31,17 +31,17 @@ location_adjectives = [
 ]
 
 location_types = {
-    'beach': {'explore': 0.5},
-    'shore': {'explore': 0.2},
-    'rock': {'explore': 0.3},
-    'trees': {'explore': 0.1},
-    'woodland': {'explore': 0.15},
-    'marsh': {'explore': 0.2},
-    'swamp': {'explore': 0.2},
-    'path': {'explore': 0.9},
-    'hill': {'explore': 0.7},
-    'mountain': {'explore': 0.1},
-    'volcano': {'explore': 0.1},
+    'beach':    {'explore': 0.50, 'explore_max': 1},
+    'shore':    {'explore': 0.20, 'explore_max': 1},
+    'rock':     {'explore': 0.30, 'explore_max': 1},
+    'trees':    {'explore': 0.10, 'explore_max': 1},
+    'woodland': {'explore': 0.15, 'explore_max': 1},
+    'marsh':    {'explore': 0.20, 'explore_max': 1},
+    'swamp':    {'explore': 0.20, 'explore_max': 1},
+    'path':     {'explore': 0.90, 'explore_max': 1},
+    'hill':     {'explore': 0.70, 'explore_max': 1},
+    'mountain': {'explore': 0.10, 'explore_max': 1},
+    'volcano':  {'explore': 0.10, 'explore_max': 1},
 }
 
 
@@ -128,7 +128,7 @@ class GameState:
                 'found': [],
                 'structures': [],
                 'connected': [],
-                'assigned': []
+                'assigned': {}
             }
             self.data['locations'].append(loc)
             self.data['locations'][-1].update(settings)
@@ -158,14 +158,15 @@ class GameState:
         return '\nCurrently {0} are assigned here.'.format(nl)
 
     def assign_cast(self, img, location, action):
-        location['assigned'].append(img)
+        location['assigned'][action] = location['assigned'].get(action, [])
+        location['assigned'][action].append(img)
         self.get_cast_by_img(img)['assigned'] = {
             'location_index': self.get_location_index(location),
             'action': action.lower()
         }
 
     def remove_cast(self, img, location, action):
-        location['assigned'].remove(img)
+        location['assigned'][action].remove(img)
         self.get_cast_by_img(img)['assigned'] = False
 
     def get_assigned_cast(self, location=None, action=None):
@@ -229,7 +230,7 @@ class GameState:
         for action in actions:
             d = actions[action]
             if d['test'](location):
-                yield action.capitalize()
+                yield action
 
     def get_assigned_actions_msg(self, location):
         cur_actions = {}
@@ -249,6 +250,19 @@ class GameState:
         return s[:-1]+')'
 
     def progress(self):
+        messages = []
+        for location in self.data['locations']:
+            for action in location['assigned']:
+                members = [
+                    self.get_cast_by_img(img)
+                    for img in location['assigned'][action]
+                ]
+                msg = actions[action]['result'](location, members)
+                messages.append(msg)
+            location['assigned'] = {}
+        for cast in self.get_cast():
+            cast['assigned'] = False
+
         if self.data['time'] == 'morning':
             self.data['time'] = 'evening'
         elif self.data['time'] == 'evening':
@@ -256,8 +270,10 @@ class GameState:
         elif self.data['time'] == 'night':
             self.data['time'] = 'morning'
             self.data['day'] += 1 
-            return ["The castaways sleep through the night"]
-        return ["stuff happens", "really stuff happens"]
+            messages.append("The castaways sleep through the night")
+        if not messages:
+            return ["Nothing happened."]
+        return messages
 
     def a_explore(self, location):
         return {'min': 1, 'max': 2}
@@ -269,7 +285,7 @@ class GameState:
             return failmsg
         if random.random() >= location['explore']:
             return failmsg
-        if not self.get_invisible_locations():
+        if not list(self.get_invisible_locations()):
             return failmsg
         new_location = random.choice(list(self.get_invisible_locations()))
         new_location['active'] = True
