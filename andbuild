@@ -1,1 +1,1 @@
-briefcase update android && briefcase build android && briefcase run android -d 465632594c423098
+briefcase update android -d && briefcase build android && briefcase run android -d 465632594c423098 && adb logcat |grep Python

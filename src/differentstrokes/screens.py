@@ -66,9 +66,11 @@ class Intro2(MultipleMessageScreen):
 
 
 class CastNames(Screen):
+    def __init__(self):
+        super().__init__(style=Pack(padding=50, direction=COLUMN))
+
     def create_display(self, state):
         self.state = state
-        super().__init__(style=Pack(padding=50, direction=COLUMN))
         state.new_game()
         self.add(toga.Label("Name your castaways"))
         cast_box = toga.Box(style=Pack(direction=COLUMN))
@@ -103,9 +105,10 @@ class CastNames(Screen):
 
 
 class PlannerScreen(Screen):
+    def __init__(self):
+        super().__init__(style=Pack(padding=50, direction=COLUMN))
 
     def create_display(self, state):
-        super().__init__(style=Pack(padding=50, direction=COLUMN))
         self.state = state
         self.add(
             toga.Label(state.format_message(
@@ -204,7 +207,7 @@ class ActionScreen(MessageScreen):
                 o.box = col2
             
             def click_button(o, widget):
-                self.remove(o.image)
+                self.remove_assignment(o.image)
                 super().click_button(widget)
     
         self.buttons = [
@@ -222,7 +225,7 @@ class ActionScreen(MessageScreen):
     def assign(self, img):
         self.state.assign_cast(img, self.location, self.action)
 
-    def remove(self, img):
+    def remove_assignment(self, img):
         self.state.remove_cast(img, self.location, self.action)
 
 

@@ -1,0 +1,1 @@
+briefcase update ios -d && briefcase build ios -d C955EA80-0917-4A96-907E-4C2A1F1B42D9 && open "iOS/Different Strokes/Different Strokes.xcodeproj"

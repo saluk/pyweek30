@@ -12,12 +12,12 @@ formal_name = "Different Strokes"
 description = "pyweek 30 castaway game"
 icon = "src/differentstrokes/resources/differentstrokes"
 sources = ['src/differentstrokes']
-requires = []
+requires = ['names==0.3.0']
 
 
 [tool.briefcase.app.differentstrokes.macOS]
 requires = [
-    'toga-cocoa>=0.3.0.dev20',
+    'toga-cocoa>=0.3.0.dev20'
 ]
 
 [tool.briefcase.app.differentstrokes.linux]
@@ -40,7 +40,8 @@ requires = [
 # Mobile deployments
 [tool.briefcase.app.differentstrokes.iOS]
 requires = [
-    'toga-iOS>=0.3.0.dev20',
+    'toga-core @ file:///Users/patrickmullen/projects/beeware-tutorial/toga/src/core',
+    'toga-iOS @ file:///Users/patrickmullen/projects/beeware-tutorial/toga/src/iOS',
 ]
 
 [tool.briefcase.app.differentstrokes.android]

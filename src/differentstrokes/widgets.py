@@ -9,8 +9,10 @@ class ScreenButton:
         self.screen = screen
         self.image = image
         self.box = box
+        self.game = None
 
-    def make_button(self):
+    def make_button(self, game):
+        self.game = game
         box = button = toga.Button(
             self.name,
             on_press=self.click_button
@@ -27,7 +29,14 @@ class ScreenButton:
         return box
 
     def click_button(self, widget):
-        widget.app.set_screen(self.screen)
+        self.game.set_screen(self.screen)
+
+
+def clear_widget(w):
+    for c in w.children:
+        print("remove",c,"from",w)
+        w.remove(c)
+        clear_widget(c)
 
 
 class Screen(toga.Box):
@@ -45,7 +54,7 @@ class Screen(toga.Box):
         if not box:
             box = self
         for button in self.buttons:
-            b = button.make_button()
+            b = button.make_button(self.game)
             if button.box:
                 button.box.add(b)
             else:
@@ -55,9 +64,10 @@ class Screen(toga.Box):
 class MessageScreen(Screen):
     def __init__(self, message=''):
         self.message = message
+        super().__init__(style=Pack(padding=100, direction=COLUMN))
 
     def create_display(self, state):
-        super().__init__(style=Pack(padding=100, direction=COLUMN))
+        clear_widget(self)
         self.add(toga.Label(state.format_message(self.message)))
         super().create_display(state)
 
